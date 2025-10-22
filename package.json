@@ -11,8 +11,7 @@
   ],
   "category": "Tools",
   "dependencies": {
-    "com.unity.textmeshpro": "4.0.0",
-    "com.unity.test-framework": "1.6.0"
+    "com.unity.textmeshpro": "4.0.0"
   },
   "author": {
     "name": "Max Baraniuk",
