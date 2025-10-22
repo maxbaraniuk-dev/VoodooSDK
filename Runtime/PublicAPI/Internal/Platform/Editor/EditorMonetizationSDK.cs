@@ -33,9 +33,7 @@ namespace Runtime.Internal.Platform.Editor
         /// <param name="onFailed">Invoked when initialization fails.</param>
         public void Initialize(string appId, string userId, Action onCompleted, Action onFailed)
         {
-            InitializeInternal(appId, userId, onCompleted, onFailed);
-            
-            //CoroutineRunner.Run(Initialize_coroutine(appId, userId, onCompleted, onFailed));
+            _ = InitializeInternal(appId, userId, onCompleted, onFailed);
         }
 
         /// <summary>
@@ -65,7 +63,7 @@ namespace Runtime.Internal.Platform.Editor
         /// <param name="onFailed">Invoked if loading fails.</param>
         public void LoadAds(Action onCompleted, Action onFailed)
         {
-            CoroutineRunner.Run(LoadAds_coroutine(onCompleted, onFailed));
+            _ = LoadAdsInternal(onCompleted, onFailed);
         }
 
         /// <summary>
@@ -74,7 +72,7 @@ namespace Runtime.Internal.Platform.Editor
         /// <returns>A <see cref="Result"/> that indicates whether ad loading succeeded.</returns>
         public Task<Result> LoadAdsAsync()
         {
-            return LoadAdsInternal();
+            return LoadAdsInternal(null, null);
         }
 
         /// <summary>
@@ -124,40 +122,6 @@ namespace Runtime.Internal.Platform.Editor
             _config = null;
         }
 
-        IEnumerator Initialize_coroutine(string appId, string userId, Action onCompleted, Action onFailed)
-        {
-            _config = AssetDatabase.LoadAssetAtPath<AdsConfig>(ConfigPath);
-            if (_config == null)
-            {
-                Debug.LogError("AdsConfig not found.");
-                onFailed?.Invoke();
-                yield break;           
-            }
-
-            var request = new UnityWebRequest(_config.initializationUrl, WebRequestMethods.Http.Post);
-            request.SetRequestHeader("Content-Type", "application/json");
-            var data = new InitData
-            {
-                appId = appId,
-                userId = userId
-            };
-            var json = JsonUtility.ToJson(data);
-            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Failed to initialize ads.");
-                onFailed?.Invoke();
-                request.Dispose();
-                yield break;           
-            }
-            
-            request.Dispose();
-            _isInitialized = true;
-            onCompleted?.Invoke();
-        }
-
         async Task<Result> InitializeInternal(string appId, string userId, Action onCompleted, Action onFailed)
         {
             _config = AssetDatabase.LoadAssetAtPath<AdsConfig>(ConfigPath);
@@ -195,39 +159,13 @@ namespace Runtime.Internal.Platform.Editor
             onCompleted?.Invoke();
             return Result.SuccessResult;
         }
-
-        IEnumerator LoadAds_coroutine(Action onCompleted, Action onFailed)
-        {
-            if (string.IsNullOrEmpty(_config.adsUrl))
-            {
-                Debug.LogError("Ads url is empty.");
-                onFailed?.Invoke();
-                yield break;
-            }
-
-            var request = UnityWebRequest.Get(_config.adsUrl);
-            request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                Debug.LogError("Failed to initialize ads.");
-                onFailed?.Invoke();
-                request.Dispose();
-                yield break;           
-            }
-            var adsData = JsonUtility.FromJson<AdResponseData>(request.downloadHandler.text);
-            request.Dispose();
-            _adsPlayer = Object.Instantiate(_config.playerPrefab);
-            onCompleted += () => _adsReady = true;
-            _adsPlayer.Prepare(adsData.videoUrl, onCompleted);
-        }
         
-        async Task<Result> LoadAdsInternal()
+        async Task<Result> LoadAdsInternal(Action onCompleted, Action onFailed)
         {
             if (string.IsNullOrEmpty(_config.adsUrl))
             {
                 Debug.LogError("Ads url is empty.");
+                onFailed?.Invoke();
                 return Result.FailedResult("Ads url is empty.");
             }
         
@@ -238,6 +176,7 @@ namespace Runtime.Internal.Platform.Editor
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError("Failed to load ads");
+                onFailed?.Invoke();
                 request.Dispose();
                 return Result.FailedResult("Failed to load ads");      
             }
@@ -251,6 +190,7 @@ namespace Runtime.Internal.Platform.Editor
             while (!_adsReady)
                 await Task.Delay(10);
             
+            onCompleted?.Invoke();
             return Result.SuccessResult;
         }
     }
