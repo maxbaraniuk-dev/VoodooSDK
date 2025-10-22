@@ -24,7 +24,7 @@ namespace Tests.EditMode
         {
             var isFinished = false;
             var isCompleted = false;
-            var timeout = 10000f;
+            var timeout = 1000f;
             Monetization.Initialize("userId", () =>
             {
                 isFinished = true;

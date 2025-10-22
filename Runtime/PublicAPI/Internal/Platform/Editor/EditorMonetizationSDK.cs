@@ -33,7 +33,7 @@ namespace Runtime.Internal.Platform.Editor
         /// <param name="onFailed">Invoked when initialization fails.</param>
         public void Initialize(string appId, string userId, Action onCompleted, Action onFailed)
         {
-            Task.Run(() => InitializeInternal(appId, userId, onCompleted, onFailed));
+            InitializeInternal(appId, userId, onCompleted, onFailed);
             
             //CoroutineRunner.Run(Initialize_coroutine(appId, userId, onCompleted, onFailed));
         }
