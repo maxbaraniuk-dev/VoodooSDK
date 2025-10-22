@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Net;
 using System.Threading.Tasks;
-using Runtime.PublicAPI;
 using Runtime.PublicAPI.Core;
 using Runtime.PublicAPI.Internal;
 using UnityEditor;
@@ -18,7 +17,7 @@ namespace Runtime.Internal.Platform.Editor
     /// </summary>
     sealed class EditorMonetizationSDK  : IMonetizationSDK
     {
-        private const string ConfigPath = "Packages/com.voodoo.sdk/Runtime/Assets/AdsInternalConfig.asset";
+        private const string ConfigPath = "Packages/com.voodoo.sdk/Runtime/PublicAPI/Internal/AdsInternalConfig.asset";
         
         private bool _isInitialized;
         private AdsConfig _config;
