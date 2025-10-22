@@ -181,7 +181,6 @@ namespace Runtime.Internal.Platform.Editor
                 return Result.FailedResult("Failed to load ads");      
             }
             var adsData = JsonUtility.FromJson<AdResponseData>(request.downloadHandler.text);
-            request.Dispose();
             
             _adsPlayer = Object.Instantiate(_config.playerPrefab);
 
@@ -190,6 +189,7 @@ namespace Runtime.Internal.Platform.Editor
             while (!_adsReady && _adsPlayer.isActiveAndEnabled)
                 await Task.Delay(10);
             
+            request.Dispose();
             onCompleted?.Invoke();
             return Result.SuccessResult;
         }
