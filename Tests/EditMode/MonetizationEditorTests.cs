@@ -18,5 +18,28 @@ namespace Tests.EditMode
             Assert.IsNotNull(config);
             Assert.IsNotNull(config.appId);
         }
+        
+        [Test]
+        public async Task InitializationComplete()
+        {
+            var isFinished = false;
+            var isCompleted = false;
+            var timeout = 10000f;
+            Monetization.Initialize("userId", () =>
+            {
+                isFinished = true;
+                isCompleted = true;
+            }, () =>
+            {
+                isFinished = true;
+            });
+
+            while (!isFinished || timeout < 0)
+            {
+                await Task.Delay(10);
+                timeout -= 10;
+            }
+            Assert.IsTrue(isCompleted);
+        }
     }
 }

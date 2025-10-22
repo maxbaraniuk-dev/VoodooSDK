@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Net;
@@ -32,7 +33,9 @@ namespace Runtime.Internal.Platform.Editor
         /// <param name="onFailed">Invoked when initialization fails.</param>
         public void Initialize(string appId, string userId, Action onCompleted, Action onFailed)
         {
-            CoroutineRunner.Run(Initialize_coroutine(appId, userId, onCompleted, onFailed));
+            Task.Run(() => InitializeInternal(appId, userId, onCompleted, onFailed));
+            
+            //CoroutineRunner.Run(Initialize_coroutine(appId, userId, onCompleted, onFailed));
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace Runtime.Internal.Platform.Editor
         /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
         public Task<Result> InitializeAsync(string appId, string userId)
         {
-            return InitializeInternal(appId, userId);
+            return InitializeInternal(appId, userId, null, null);
         }
 
         /// <summary>
@@ -152,16 +155,17 @@ namespace Runtime.Internal.Platform.Editor
             
             request.Dispose();
             _isInitialized = true;
-            onCompleted.Invoke();
+            onCompleted?.Invoke();
         }
 
-        async Task<Result> InitializeInternal(string appId, string userId)
+        async Task<Result> InitializeInternal(string appId, string userId, Action onCompleted, Action onFailed)
         {
             _config = AssetDatabase.LoadAssetAtPath<AdsConfig>(ConfigPath);
 
             if (_config == null)
             {
                 Debug.LogError("AdsConfig not found.");
+                onFailed?.Invoke();
                 return Result.FailedResult("AdsConfig not found.");
             }
 
@@ -182,11 +186,13 @@ namespace Runtime.Internal.Platform.Editor
             {
                 request.Dispose();
                 Debug.LogError("Failed to initialize ads.");
+                onFailed?.Invoke();
                 return Result.FailedResult("Failed to initialize ads.");   
             }
             
             _isInitialized = true;
             request.Dispose();
+            onCompleted?.Invoke();
             return Result.SuccessResult;
         }
 
@@ -249,3 +255,5 @@ namespace Runtime.Internal.Platform.Editor
         }
     }
 }
+
+#endif
