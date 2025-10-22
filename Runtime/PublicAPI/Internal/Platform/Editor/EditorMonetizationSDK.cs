@@ -157,7 +157,7 @@ namespace Runtime.Internal.Platform.Editor
 
         async Task<Result> InitializeInternal(string appId, string userId)
         {
-            _config = Resources.Load<AdsConfig>("AdsConfig");
+            _config = AssetDatabase.LoadAssetAtPath<AdsConfig>(ConfigPath);
 
             if (_config == null)
             {
@@ -214,7 +214,7 @@ namespace Runtime.Internal.Platform.Editor
             request.Dispose();
             _adsPlayer = Object.Instantiate(_config.playerPrefab);
             onCompleted += () => _adsReady = true;
-            _adsPlayer.Prepare(adsData.url, onCompleted);
+            _adsPlayer.Prepare(adsData.videoUrl, onCompleted);
         }
         
         async Task<Result> LoadAdsInternal()
@@ -240,7 +240,7 @@ namespace Runtime.Internal.Platform.Editor
             
             _adsPlayer = Object.Instantiate(_config.playerPrefab);
 
-            _adsPlayer.Prepare(adsData.url, () => _adsReady = true);
+            _adsPlayer.Prepare(adsData.videoUrl, () => _adsReady = true);
 
             while (!_adsReady)
                 await Task.Delay(10);

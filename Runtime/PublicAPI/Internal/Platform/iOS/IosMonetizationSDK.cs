@@ -1,6 +1,6 @@
+#if UNITY_IOS
 using System;
 using System.Threading.Tasks;
-using Runtime.PublicAPI;
 using Runtime.PublicAPI.Core;
 using Runtime.PublicAPI.Internal;
 
@@ -10,42 +10,47 @@ namespace Runtime.Internal.Platform.iOS
     {
         public void Initialize(string appId, string userId, Action onCompleted, Action onFailed)
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
         }
 
         public Task<Result> InitializeAsync(string appId, string userId)
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
+            return null;
         }
 
         public bool IsInitialized()
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
+            return false;
         }
 
         public void LoadAds(Action onCompleted, Action onFailed)
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
         }
 
         public Task<Result> LoadAdsAsync()
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
+            return null;
         }
 
         public bool IsAdsReady()
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
+            return false;
         }
 
         public void ShowRewardedAds(Action onRewarded, Action onFailed, Action onSkipped)
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            // iOS implementation not yet available.
         }
     }
 }
+#endif
