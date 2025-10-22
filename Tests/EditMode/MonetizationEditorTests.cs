@@ -34,7 +34,7 @@ namespace Tests.EditMode
                 isFinished = true;
             });
 
-            while (!isFinished || timeout < 0)
+            while (!isFinished && timeout > 0)
             {
                 await Task.Delay(10);
                 timeout -= 10;
