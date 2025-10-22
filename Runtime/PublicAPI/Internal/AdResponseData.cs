@@ -1,6 +1,6 @@
 namespace Runtime.PublicAPI.Internal
 {
-    internal struct AdResponseData
+    internal class AdResponseData
     {
         public string videoUrl;
     }
