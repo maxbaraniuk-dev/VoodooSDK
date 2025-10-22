@@ -187,7 +187,7 @@ namespace Runtime.Internal.Platform.Editor
 
             _adsPlayer.Prepare(adsData.videoUrl, () => _adsReady = true);
 
-            while (!_adsReady)
+            while (!_adsReady && _adsPlayer.isActiveAndEnabled)
                 await Task.Delay(10);
             
             onCompleted?.Invoke();
