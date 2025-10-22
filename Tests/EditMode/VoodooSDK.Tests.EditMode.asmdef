@@ -1,0 +1,19 @@
+{
+  "name": "VoodooSDK.Tests.EditMode",
+  "rootNamespace": "",
+  "references": [
+    "Assembly-CSharp",
+    "SDK.External"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
