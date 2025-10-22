@@ -8,6 +8,7 @@ namespace Tests.EditMode
 {
     public class MonetizationEditorTests
     {
+        [Order(1)]
         [Test]
         public void MonetizationConfigExistsAndValid()
         {
@@ -19,6 +20,7 @@ namespace Tests.EditMode
             Assert.IsNotNull(config.appId);
         }
         
+        [Order(2)]
         [Test]
         public void IsInitializedBeforeInitialization()
         {
@@ -26,6 +28,7 @@ namespace Tests.EditMode
             Assert.IsFalse(iaInitialized);
         }
         
+        [Order(3)]
         [Test]
         public async Task InitializationComplete()
         {
@@ -49,6 +52,7 @@ namespace Tests.EditMode
             Assert.IsTrue(isCompleted);
         }
         
+        [Order(4)]
         [Test]
         public void IsInitializedAfterInitialization()
         {
@@ -56,41 +60,12 @@ namespace Tests.EditMode
             Assert.IsTrue(iaInitialized);
         }
         
+        [Order(5)]
         [Test]
         public async Task InitializationAsyncComplete()
         {
             var result = await Monetization.InitializeAsync("userId");
             Assert.IsTrue(result.Success);
         }
-        
-        // [Test]
-        // public async Task LoadAdsComplete()
-        // {
-        //     var isFinished = false;
-        //     var isCompleted = false;
-        //     var timeout = 1000f;
-        //     Monetization.LoadAds(() =>
-        //     {
-        //         isFinished = true;
-        //         isCompleted = true;
-        //     }, () =>
-        //     {
-        //         isFinished = true;
-        //     });
-        //
-        //     while (!isFinished && timeout > 0)
-        //     {
-        //         await Task.Delay(10);
-        //         timeout -= 10;
-        //     }
-        //     Assert.IsTrue(isCompleted);
-        // }
-        //
-        // [Test]
-        // public async Task LoadAdsAsyncComplete()
-        // {
-        //     var result = await Monetization.LoadAdsAsync();
-        //     Assert.IsTrue(result.Success);
-        // }
     }
 }
