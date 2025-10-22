@@ -19,7 +19,7 @@ You can use any of these approaches:
 
 Add from a Git URL:
 - Window > Package Manager > + > Add package from Git URL…
-- Enter your repository URL (for example: https://github.com/your-org/voodoo-sdk.git)
+- Fill package url: git@github.com:maxbaraniuk-dev/VoodooSDK.git
 
 Note: This repository already contains a package.json under Assets/, so Unity will treat it as an embedded UPM package when added from disk.
 
