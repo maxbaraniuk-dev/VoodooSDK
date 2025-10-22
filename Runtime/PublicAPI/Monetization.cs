@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using PublicAPI.Internal;
-using Runtime.PublicAPI;
 using Runtime.PublicAPI.Core;
 using Runtime.PublicAPI.Internal;
 using UnityEngine;
@@ -33,31 +32,15 @@ namespace Voodoo
         /// <param name="onFailed">Callback invoked when initialization fails (e.g., missing config or invalid app id).</param>
         public static void Initialize(string userId, Action onCompleted, Action onFailed)
         {
-            var configJson = Resources.Load<TextAsset>(ConfigLoadPath);
-            if (configJson == null)
+            Debug.Log("Monetization Init");
+            var configInitResult = InitializeConfig();
+            if (!configInitResult.Success)
             {
-                Debug.LogError("Config not found. Open Tools/Monetization configuration and enter valid application id");
                 onFailed?.Invoke();
-                return;
-            }
-            _config = JsonUtility.FromJson<ConfigData>(configJson.text);
-
-            if (_config == null)
-            {
-                Debug.LogError("Failed to load config from file");
-                onFailed?.Invoke();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(_config.appId))
-            {
-                Debug.LogError("Application id is empty. Open Tools/Monetization configuration and enter valid application id");
-                onFailed?.Invoke();
-                return;
+                return;           
             }
 
             _sdk = SDKProvider.Create();
-            Debug.Log("Monetization Init");
             _sdk.Initialize(_config.appId, userId, onCompleted, onFailed);
         }
         
@@ -67,16 +50,17 @@ namespace Voodoo
         /// <param name="appId">The monetization application identifier supplied by the provider.</param>
         /// <param name="userId">A unique identifier for the current user/session.</param>
         /// <returns>A <see cref="Result"/> indicating success or failure.</returns>
-        public static async Task<Result> InitializeAsync(string appId, string userId)
+        public static Task<Result> InitializeAsync(string userId)
         {
-            _sdk = SDKProvider.Create();
-            Debug.Log("Monetization Init");
-            var res = await _sdk.InitializeAsync(appId, userId);
-            return new Result
+            Debug.Log("Monetization Init async");
+            var configInitResult = InitializeConfig();
+            if (!configInitResult.Success)
             {
-                Success = res.Success,
-                Message = res.Message
-            };
+                return Task.FromResult(configInitResult);           
+            }
+            
+            _sdk = SDKProvider.Create();
+            return _sdk.InitializeAsync(_config.appId, userId);
         }
         
         /// <summary>
@@ -95,6 +79,7 @@ namespace Voodoo
         /// <param name="onFailed">Callback invoked if loading fails or the SDK is not initialized.</param>
         public static void LoadAds(Action onCompleted, Action onFailed)
         {
+            Debug.Log("LoadAds");
             if (_sdk == null)
             {
                 Debug.LogError("SDK not initialized.");
@@ -108,20 +93,16 @@ namespace Voodoo
         /// Asynchronously preloads ad content.
         /// </summary>
         /// <returns>A <see cref="Result"/> that indicates whether loading succeeded.</returns>
-        public static async Task<Result> LoadAdsAsync()
+        public static Task<Result> LoadAdsAsync()
         {
+            Debug.Log("LoadAds async");
             if (_sdk == null)
             {
                 Debug.LogError("SDK is not initialized.");
-                return Result.FailedResult("SDK is not initialized");
+                return Task.FromResult(Result.FailedResult("SDK is not initialized"));
             }
             
-            var res = await _sdk.LoadAdsAsync();
-            return new Result
-            {
-                Success = res.Success,
-                Message = res.Message
-            };
+            return _sdk.LoadAdsAsync();
         }
         
         /// <summary>
@@ -147,6 +128,7 @@ namespace Voodoo
         /// <param name="onSkipped">Invoked if the user skips the ad and no reward should be granted.</param>
         public static void ShowRewardedAds(Action onRewarded, Action onFailed, Action onSkipped)
         {
+            Debug.Log("ShowRewardedAds");
             if (_sdk == null)
             {
                 Debug.LogError("SDK not initialized.");
@@ -170,6 +152,7 @@ namespace Voodoo
         /// </remarks>
         public static void Dispose()
         {
+            Debug.Log("ShowRewardedAds");
             if (_sdk == null)
             {
                 Debug.LogError("SDK not initialized.");
@@ -178,6 +161,29 @@ namespace Voodoo
             
             _sdk.Dispose();
             _sdk = null;
+        }
+
+        private static Result InitializeConfig()
+        {
+            var configJson = Resources.Load<TextAsset>(ConfigLoadPath);
+            if (configJson == null)
+            {
+                Debug.LogError("Config not found. Open Tools/Monetization configuration and enter valid application id");
+                return Result.FailedResult("Config not found. Open Tools/Monetization configuration and enter valid application id");
+            }
+            _config = JsonUtility.FromJson<ConfigData>(configJson.text);
+
+            if (_config == null)
+            {
+                Debug.LogError("Failed to load config from file");
+                return Result.FailedResult("Failed to load config from file");
+            }
+
+            if (!string.IsNullOrEmpty(_config.appId)) 
+                return Result.SuccessResult;
+            
+            Debug.LogError("Application id is empty. Open Tools/Monetization configuration and enter valid application id");
+            return Result.FailedResult("Application id is empty. Open Tools/Monetization configuration and enter valid application id");
         }
     }
 }

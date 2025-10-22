@@ -1,6 +1,9 @@
+using System;
+
 namespace Runtime.PublicAPI.Internal
 {
-    internal class AdResponseData
+    [Serializable]
+    internal struct AdResponseData
     {
         public string videoUrl;
     }

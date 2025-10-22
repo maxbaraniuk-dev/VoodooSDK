@@ -1,6 +1,6 @@
 namespace Runtime.PublicAPI.Core
 {
-    public class Result
+    public struct Result
     {
         public bool Success;
         public string Message;

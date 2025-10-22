@@ -20,6 +20,13 @@ namespace Tests.EditMode
         }
         
         [Test]
+        public void IsInitializedBeforeInitialization()
+        {
+            var iaInitialized = Monetization.IsInitialized();
+            Assert.IsFalse(iaInitialized);
+        }
+        
+        [Test]
         public async Task InitializationComplete()
         {
             var isFinished = false;
@@ -41,5 +48,49 @@ namespace Tests.EditMode
             }
             Assert.IsTrue(isCompleted);
         }
+        
+        [Test]
+        public void IsInitializedAfterInitialization()
+        {
+            var iaInitialized = Monetization.IsInitialized();
+            Assert.IsTrue(iaInitialized);
+        }
+        
+        [Test]
+        public async Task InitializationAsyncComplete()
+        {
+            var result = await Monetization.InitializeAsync("userId");
+            Assert.IsTrue(result.Success);
+        }
+        
+        // [Test]
+        // public async Task LoadAdsComplete()
+        // {
+        //     var isFinished = false;
+        //     var isCompleted = false;
+        //     var timeout = 1000f;
+        //     Monetization.LoadAds(() =>
+        //     {
+        //         isFinished = true;
+        //         isCompleted = true;
+        //     }, () =>
+        //     {
+        //         isFinished = true;
+        //     });
+        //
+        //     while (!isFinished && timeout > 0)
+        //     {
+        //         await Task.Delay(10);
+        //         timeout -= 10;
+        //     }
+        //     Assert.IsTrue(isCompleted);
+        // }
+        //
+        // [Test]
+        // public async Task LoadAdsAsyncComplete()
+        // {
+        //     var result = await Monetization.LoadAdsAsync();
+        //     Assert.IsTrue(result.Success);
+        // }
     }
 }

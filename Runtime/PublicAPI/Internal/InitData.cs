@@ -3,7 +3,7 @@ using System;
 namespace Runtime.PublicAPI.Internal
 {
     [Serializable]
-    internal class InitData
+    internal struct InitData
     {
         public string appId;
         public string userId;
